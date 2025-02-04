@@ -1,5 +1,9 @@
 
 import os
+
+import numpy as np
+import pandas as pd
+
 from config_parser import Parser
 from preprocessing import builder
 from architectures import get_attMIL
@@ -31,11 +35,22 @@ class Fusion_MIL:
 
         self.one_batch = True
 
-    def __call__(self, data):
-        X = self.builder(data)
-        y = self.model.predict(X)
+    def get_output(self, Y, t):
+        Y_ = np.argmax(Y, axis=1)
+        modes = list(map(lambda y_: self.builder.modes[y_], Y_))
+        output = pd.DataFrame(columns=['subject', 'timestamp', 'mode'])
+        output['subject'] = t[:, 0]
+        output['timestamp'] = t[:, 2]
+        output['mode'] = modes
 
-        return y
+        return output
+
+    def __call__(self, data):
+        X, t = self.builder(data)
+        Y = self.model.predict(X, verbose=0)
+        output = self.get_output(Y, t)
+
+        return output
 
 
 

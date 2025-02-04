@@ -104,7 +104,7 @@ def main():
     data = (acc_df, loc_df)
 
     start = datetime.now()
-    mode_df = fusion_mil(data)
+    modes = fusion_mil(data)
     end = datetime.now()
     print(end - start)
 

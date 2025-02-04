@@ -84,7 +84,7 @@ class builder:
         self.syncing = bagging(acc_t, loc_t, self.conf.threshold)
         batch = self.to_batch(acc, loc)
 
-        return batch
+        return batch, acc_t
 
 
 
