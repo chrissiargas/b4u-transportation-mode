@@ -34,7 +34,7 @@ def acc_form(x: pd.DataFrame, threshold: float) -> pd.DataFrame:
     gap_durations = x.groupby("gap_id")["timestamp"].agg(lambda x: (x.max() - x.min()).total_seconds())
 
     # Identify big gaps > threshold (s)
-    big_gaps = gap_durations[gap_durations > threshold].index[1:]
+    big_gaps = gap_durations[gap_durations > threshold].index[1:] # exclude 0, corresponding to valid data
     x = assign_session(x, big_gaps)
 
     # Drop big gaps

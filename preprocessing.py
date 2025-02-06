@@ -1,11 +1,14 @@
 import numpy as np
 import pandas as pd
+from typing import Optional
 
 from config_parser import Parser
-from typing import Tuple, Dict
+from typing import Tuple, Dict, List
 from utils import acc_produce, loc_produce, acc_segment, loc_segment, bagging, acc_form
 import tensorflow as tf
 from transformers import temper, specter, locformer
+from plots import plot_window
+import matplotlib.pyplot as plt
 
 class builder:
     def __init__(self):
@@ -70,7 +73,7 @@ class builder:
         batch = [np.array([input[i] for input in batch]) for i in range(len(X))]
         return batch
 
-    def __call__(self, data: Tuple[pd.DataFrame, pd.DataFrame]):
+    def __call__(self, data: Tuple[pd.DataFrame, pd.DataFrame], verbose: bool = False):
         acc, loc = data
 
         acc = acc_form(acc, threshold=self.conf.threshold)
@@ -81,10 +84,17 @@ class builder:
         acc, acc_t, self.acc_channels = acc_segment(acc, self.conf.acc_length, self.conf.acc_stride, self.conf.bag_size, self.conf.bag_step)
         loc, loc_t, self.loc_channels = loc_segment(loc, self.conf.loc_length, self.conf.loc_stride)
 
-        self.syncing = bagging(acc_t, loc_t, self.conf.threshold)
+        if verbose:
+            plot_window(acc, acc_t, self.acc_channels, features=['acc_x', 'acc_y', 'acc_z', 'norm_xyz'],
+                        subject='auth-test1-38', timestamp = '2025-02-03 09:37:59')
+            plot_window(loc, loc_t, self.loc_channels, features=['velocity', 'acceleration'],
+                        subject='auth-test1-38', timestamp = '2025-02-03 09:37:59')
+
+        self.syncing = bagging(acc_t, loc_t, self.conf.sync_thres)
         batch = self.to_batch(acc, loc)
 
         return batch, acc_t
+
 
 
 

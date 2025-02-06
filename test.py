@@ -1,9 +1,12 @@
+
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 from fusion_MIL import Fusion_MIL
+from extract import get_acceleration, get_location
 
-hours = 24
+hours = 8
+
 def generate_acceleration():
     sampling_rate = 10  # Hz
     duration = hours * 60 * 60  # 8 hours in seconds
@@ -98,13 +101,13 @@ def generate_location():
 
 
 def main():
-    np.random.seed(68)
-    acc_df = generate_acceleration()
-    loc_df = generate_location()
-    data = (acc_df, loc_df)
-
+    pd.set_option('display.max_rows', None)
     start = datetime.now()
-    modes = fusion_mil(data)
+
+    acc_df = get_acceleration(fs = 10, threshold = 2)
+    loc_df = get_location(T = 60, threshold = 300)
+    modes = fusion_mil((acc_df, loc_df), verbose = True)
+
     end = datetime.now()
     print(end - start)
 

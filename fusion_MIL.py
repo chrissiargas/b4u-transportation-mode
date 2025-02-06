@@ -45,8 +45,8 @@ class Fusion_MIL:
 
         return output
 
-    def __call__(self, data):
-        X, t = self.builder(data)
+    def __call__(self, data, verbose: bool = False):
+        X, t = self.builder(data, verbose)
         Y = self.model.predict(X, verbose=0)
         output = self.get_output(Y, t)
 
